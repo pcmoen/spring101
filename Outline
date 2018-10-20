@@ -1,0 +1,44 @@
+Hvorfor Spring
+
+- testbar kode (vis "skoleeksempel")
+- vedlikeholdbar kode (vis arbeidsgivertjenestemodul som bruker new selv)
+- skript for å lage app, hvis pensjonsvedtak sin batch
+- godt vedlikeholdt og godt dokumentert prosjekter
+
+Hva er bønner
+
+Context|
+
+
+Hvordan lage bønner
+
+- xml - @required
+- javaconfig kom i 2007 - fullverdig fra 2009
+- annotering kom i 2007 - fullverdig fra 2009
+- nevn lambda-registrering	
+
+Hvordan spesifisere bønner når man har fler av dem
+
+- Navn
+- Qualifier
+- Primary
+- Metodekall på @Configuration klasse
+- Configurer pattern
+
+Component stereotyp
+
+- Component
+- Repository
+- Service
+- Controller
+- RestController
+
+Funksjonalitet på tvers av bønner
+
+- transactional
+- scheduled
+- async
+- forklar hvorfor man ønsker interface for proxyer
+- andre aspekter
+
+Spring Boot
