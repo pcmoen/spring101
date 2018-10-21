@@ -250,7 +250,10 @@ class: center, middle, inverse
 
 .right-column[
 - Konfigurasjonen lages i XML filer.
-- Legacy etter Spring 2.5 (19.11.2007) og 3.0 (16.12.2009).
+
+- Den opprinnelige måten å definere bønner på.
+
+- Legacy siden Spring 2.5 (19.11.2007) og 3.0 (16.12.2009).
 ]
 
 ---
@@ -264,29 +267,22 @@ class: center, middle, inverse
 
 Opprette
 ```xml
-<bean id="personRepository"
-      class="com.example.PersonRepository">
+<bean id="myRepository" class="com.example.MyRepository">
+    [...]
 </bean>
 ```
 
 Sette verdier via settere eller felter
 ```xml
-<bean id="personRepository"
-      class="com.example.PersonRepository">
-    <property
-            name="sessionFactory"
-            ref="sessionFactory"
-    />
+<bean id="myRepository" class="com.example.MyRepository">
+    <property name="sessionFactory" ref="sessionFactory" />
 </bean>
 ```
 
 Sette verdier vha konstruktører
 ```xml
-<bean id="personRepository"
-      class="com.example.PersonRepository">
-     <constructor-arg
-            ref="sessionFactory"
-    />
+<bean id="myRepository" class="com.example.MyRepository">
+     <constructor-arg ref="sessionFactory" />
 </bean>
 ```
 ]
@@ -296,6 +292,121 @@ Sette verdier vha konstruktører
 .left-column[
 ## Hvordan lage bønner
 ### - XML
+]
+
+.right-column[
+
+Bruk @Autowired eller @Required for at å sikre at en verdi blir satt. 
+
+Krever at støtte for annotasjoner er slått på i context. Enten ved å bruke en annotasjonsdrevet konfigurasjon
+eller ved å bruke `<context:annotation-config/>` i en _xml-fil_.
+
+
+
+Kan brukes på felt
+```java
+class PersonRepository {
+    @Autowired
+    private SessionFactory sessionFactory;    
+}
+```
+
+```java
+class PersonRepository {
+    @Required
+    private SessionFactory sessionFactory;
+}
+```
+]
+
+---
+
+.left-column[
+## Hvordan lage bønner
+### - XML
+]
+
+.right-column[
+
+Bruk @Autowired eller @Required for at å sikre at en verdi blir satt
+
+
+Og på settere
+
+```java
+class PersonRepository {
+    private SessionFactory sessionFactory;
+    
+    @Autowired
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+}
+```
+
+
+```java
+class PersonRepository {
+    private SessionFactory sessionFactory;
+    
+    @Required
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+}
+```
+]
+---
+
+.left-column[
+## Hvordan lage bønner
+### - XML
+]
+
+.right-column[
+
+@Autowired oppfører seg som @Required ved bruk sammen med xml-filer og eksplisitt setting av egenskaper.
+
+I tillegg tillater @Autowired automatisk oppslag og injisering av bønner.
+
+@Autowired er å foretrekke fremfor @Required. Gjør det enklere å migrere fra xml-basert konfigurasjon til
+Java-basert konfigurasjon, i situasjoner hvor vi benytter både xml-konfigurasjon og java-konfigurasjon..
+]
+
+---
+
+.left-column[
+## Hvordan lage bønner
+### - XML
+### - Component Scanning
+]
+
+.right-column[
+Komponentskanning slås på med `@ComponentScan`.
+
+```java
+@ComponentScan
+public class Application {
+}
+```
+
+Komponenter annoteres så med `@Component`.
+
+```java
+@Component
+public class PersonRepository {
+        @Autowired
+        private SessionFactory sessionFactory;
+}
+```
+]
+
+---
+
+.left-column[
+## Hvordan lage bønner
+### - XML
+### - Component Scanning
 ### - Java Config
 ]
 
@@ -318,35 +429,6 @@ public class ExampleConfiguration {
         public PersonRepository personRepository() {
             return new PersonRepository(sessionFactory);
         }
-}
-```
-]
-
----
-
-.left-column[
-## Hvordan lage bønner
-### - XML
-### - Java Config
-### - Component Scanning
-]
-
-.right-column[
-Komponentskanning slås på med `@ComponentScan`.
-
-```java
-@ComponentScan
-public class Application {
-}
-```
-
-Komponenter annoteres så med `@Component`.
-
-```java
-@Component
-public class PersonRepository {
-        @Autowired
-        private SessionFactory sessionFactory;
 }
 ```
 ]
