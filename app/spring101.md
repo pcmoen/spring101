@@ -239,6 +239,11 @@ class: center, middle, inverse
 
 .right-column[
         Referes ved hjelp av navn eller type.
+        
+        Context holder bønner, gir navnerom. Kan ha flere contexter. Kan gjøres som parent / child.
+        
+        Konstruktører skal kun sette verdier. Ikke lage nye instanser eller gjøre logikk. Oppstartslogikk bør
+        legges i afterPropertiesSet eller metoder annotert med @PostConstruct
 ]
 
 ---
@@ -258,12 +263,7 @@ class: center, middle, inverse
 
 ---
 
-.left-column[
-## Hvordan lage bønner
-### - XML
-]
-
-.right-column[
+## Hvordan lage bønner - XML
 
 Opprette
 ```xml
@@ -285,16 +285,57 @@ Sette verdier vha konstruktører
      <constructor-arg ref="sessionFactory" />
 </bean>
 ```
-]
 
 ---
 
-.left-column[
-## Hvordan lage bønner
-### - XML
-]
+## Hvordan lage bønner - XML
 
-.right-column[
+Bruke fabrikkmetoder eller fabrikktyper.
+
+- statisk metode
+
+- instansmetode
+
+- FactoryBean grensesnittet
+
+---
+
+## Hvordan lage bønner - XML
+
+<span style="color:gray">Bruke fabrikkmetoder eller fabrikktyper.</span>
+
+### Statisk metode
+Bruk `factory-method` attributtet for å kalle på en statisk metode
+```xml
+<bean id="exampleBean"
+       class="examples.ExampleBean2"
+       factory-method="createInstance"/>
+```
+---
+
+## Hvordan lage bønner - XML
+
+<span style="color:gray">Bruke fabrikkmetoder eller fabrikktyper.</span>
+
+
+### Instansmetode
+Bruk `factory-bean` og `factory-method` attributtene for å kalle på en metode på en instans
+
+Lag en instans av fabrikken 
+```xml
+<bean id="myFactory" class="com.examle.MyFactory" />
+```
+
+Kall på metoden på fabrikken slik
+```xml
+<bean id="myBean"
+       factory-bean="myFactory"
+       factory-method="create" />
+```
+
+---
+
+## Hvordan lage bønner - XML
 
 Bruk @Autowired eller @Required for at å sikre at en verdi blir satt. 
 
@@ -317,16 +358,11 @@ class PersonRepository {
     private SessionFactory sessionFactory;
 }
 ```
-]
 
 ---
 
-.left-column[
-## Hvordan lage bønner
-### - XML
-]
 
-.right-column[
+## Hvordan lage bønner - XML
 
 Bruk @Autowired eller @Required for at å sikre at en verdi blir satt
 
@@ -355,7 +391,7 @@ class PersonRepository {
     }
 }
 ```
-]
+
 ---
 
 .left-column[
