@@ -2,6 +2,8 @@ class: center, middle, inverse
 
 # Spring 101
 
+.footnote[Sett i lys av Statens Pensjonskasse]
+
 ---
 
 class: center, middle, inverse
@@ -38,7 +40,7 @@ class: split-50
 ]
 ]
 
-.footnote[Over 20 aktive prosjekter i [spring.io](https://spring.io/projects)]
+.footnote[Over 20 aktive prosjekter på [spring.io](https://spring.io/projects)]
 
 ---
 
@@ -50,6 +52,8 @@ class: split-50
 #Spring Framework
 
 - Det _opprinnelige_ Spring-rammeverket
+
+- Open Source (Apache 2 lisens)
 
 - Startet som et alternativ til EJB i 2002
 
@@ -172,6 +176,7 @@ Provides core support for dependency injection, transaction management, web apps
 - Integration: remoting, JMS, JCA, JMX, email, tasks, scheduling, cache.
 
 - Languages: Kotlin, Groovy, dynamic languages.
+
 ---
 
 # Dependency Injection
@@ -204,31 +209,99 @@ class Bil {
 
 ---
 
-.left-column[
-## Hvorfor Spring
-### - Testbar kode
-### - Forvaltbar kode
-]
+# Dependency Injection
 
-.right-column[
-]
+Spring Framework har støtte for å hente konfigurasjonegenskaper ifra filer, miljøvariable osv.
+
+```java
+@Configuration
+public class DatabaseConfiguration {
+    @Value("dataSource.database") String database;
+    @Value("dataSource.username") String username;
+    @Value("dataSource.password") String password;
+
+	@Bean
+	public DataSource() {
+		return new DataSource(database, username, password);
+    }
+}
+```
+
+```java
+class FooRepository {
+	@Autowired
+    DataSource dataSource;
+
+    List<FooRepository> getAll() {
+        return [...]
+    }
+}
+```
+---
+
+# Transaksjonshåndtering
+
+Uten verktøy for transaksjoner og databasetilkoblinger så må man håndtere dette manuelt.
+
+```java
+class FooRepository {
+	public void lagre(Foo foo) {
+		Connection connection = dataSource.getConnection();
+		Transaction transaction = connection.startTransaction();
+		try {
+			// lagre data
+			transaction.commit();
+		} catch (IgnorerbarException e) {
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		} finally{
+			connection.release();
+		}
+	}
+}
+```
+
+I tillegg bør man også støtte situasjoner hvor en transaksjonen er startet før kall på repositoryet.
+    
+---
+
+# Transaksjonshåndtering
+
+Med Spring Framework så vil databasetilkoblinger og transaksjoner håndteres gjennomsiktig og automatisk.
+
+Aktive transaksjoner er støttet og følgende eksempel vil ta del av disse.
+
+```java
+class FooRepositoryImpl implements FooRepository {
+    @Override
+    @Transactional
+	public void lagre(Foo foo) throws IgnorerbarException {
+    	// lagre data
+	}
+}
+```
+
+Best practice
+
+- Alle metoder som bruker `@Transactional` bør være del av grensesnitt.
+
+- Uten bruk av grensesnitt så er man avhengig av spesifikk advice- eller proxy-konfigurajon
+for at `@Transactional` skal fungere.
 
 ---
 
-.left-column[
-## Spring Beans
-### - Testbar kode
-### - Forvaltbar kode
-]
+# Spring Framework
 
-.right-column[
-]
+- håndterer livssyklusen til objektene
 
----
+- instansierer objektene og kobler sammen avhengigheter
 
-class: center, middle, inverse
+- kan veve inn ekstra funksjonalitet; transaksjonshåndtering og liknende
 
-## Hvordan bruke Spring?
+- kan hente konfigurasjonsegenskaper fra fil, miljøvariable med videre
+
+- støtte for rekursiv oppslag av konfigurasjonegenskaper
 
 ---
 
@@ -238,12 +311,13 @@ class: center, middle, inverse
 ]
 
 .right-column[
-        Referes ved hjelp av navn eller type.
+- Referes ved hjelp av navn eller type.
         
-        Context holder bønner, gir navnerom. Kan ha flere contexter. Kan gjøres som parent / child.
-        
-        Konstruktører skal kun sette verdier. Ikke lage nye instanser eller gjøre logikk. Oppstartslogikk bør
-        legges i afterPropertiesSet eller metoder annotert med @PostConstruct
+- Context holder bønner, gir navnerom. Kan ha flere contexter. Kan gjøres som parent / child.
+
+- Konstruktører skal kun sette verdier. Ikke lage nye instanser eller gjøre logikk.
+
+- Oppstartslogikk bør legges i afterPropertiesSet eller metoder annotert med @PostConstruct
 ]
 
 ---
@@ -337,7 +411,7 @@ Kall på metoden på fabrikken slik
 
 ## Hvordan lage bønner - XML
 
-Bruk @Autowired eller @Required for at å sikre at en verdi blir satt. 
+Bruk @Autowired eller @Required for å sikre at en verdi blir satt. 
 
 Krever at støtte for annotasjoner er slått på i context. Enten ved å bruke en annotasjonsdrevet konfigurasjon
 eller ved å bruke `<context:annotation-config/>` i en _xml-fil_.
@@ -364,7 +438,7 @@ class PersonRepository {
 
 ## Hvordan lage bønner - XML
 
-Bruk @Autowired eller @Required for at å sikre at en verdi blir satt
+Bruk @Autowired eller @Required for å sikre at en verdi blir satt
 
 
 Og på settere
